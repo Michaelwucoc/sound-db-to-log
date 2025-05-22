@@ -70,6 +70,26 @@
             <p>当前分贝值: <span id="dbValue">0</span> dB</p>
             <p>对数值: <span id="logValue">0</span></p>
         </div>
+        <div class="formula" style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px; border: 1px solid #e9ecef;">
+            <h3 style="margin-top: 0; color: #495057;">计算公式说明</h3>
+            <div style="color: #666;">
+                <p><strong>1. 分贝值计算：</strong></p>
+                <p style="font-family: 'Courier New', monospace; background: #eee; padding: 8px; border-radius: 4px;">
+                    dB = 20 × log₁₀(average / 255) + 100
+                </p>
+                <p>其中：</p>
+                <ul>
+                    <li>average: 音频频率数据的平均值</li>
+                    <li>255: 音频数据的最大值</li>
+                    <li>+100: 将范围调整到 0-100dB</li>
+                </ul>
+                <p><strong>2. 对数转换：</strong></p>
+                <p style="font-family: 'Courier New', monospace; background: #eee; padding: 8px; border-radius: 4px;">
+                    log_value = log₁₀(dB + 1)
+                </p>
+                <p>注：加1是为了避免当分贝值为0时取对数出现错误</p>
+            </div>
+        </div>
     </div>
 
     <script>
