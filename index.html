@@ -69,6 +69,7 @@
         <div class="values">
             <p>当前分贝值[CURRENT DB VALUE]: <span id="dbValue">0</span> dB</p>
             <p>对数值[LOG VALUE]: <span id="logValue">0</span></p>
+            <p>主频率[MAIN FREQUENCY]: <span id="freqValue">0</span> Hz</p>
         </div>
         <div class="formula" style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px; border: 1px solid #e9ecef;">
             <h3 style="margin-top: 0; color: #495057;">计算公式说明</h3>
@@ -173,10 +174,24 @@
             dbValueSpan.textContent = db.toFixed(2);
             logValueSpan.textContent = logValue.toFixed(4);
 
-            // 绘制波形图
+            // 绘制波形图和频率刻度
             canvasCtx.fillStyle = 'rgb(255, 255, 255)';
             canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
+            // 计算主频率
+            let maxAmplitude = 0;
+            let dominantFreqIndex = 0;
+            for (let i = 0; i < bufferLength; i++) {
+                if (dataArray[i] > maxAmplitude) {
+                    maxAmplitude = dataArray[i];
+                    dominantFreqIndex = i;
+                }
+            }
+            const sampleRate = audioContext.sampleRate;
+            const dominantFreq = (dominantFreqIndex * sampleRate) / (analyser.fftSize * 2);
+            document.getElementById('freqValue').textContent = Math.round(dominantFreq);
+
+            // 绘制频谱图
             const barWidth = (canvas.width / bufferLength) * 2.5;
             let barHeight;
             let x = 0;
@@ -187,6 +202,14 @@
                 const hue = (i / bufferLength) * 360;
                 canvasCtx.fillStyle = `hsl(${hue}, 70%, 50%)`;
                 canvasCtx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+
+                // 每隔一定间隔绘制频率刻度
+                if (i % 32 === 0) {
+                    const freq = Math.round((i * sampleRate) / (analyser.fftSize * 2));
+                    canvasCtx.fillStyle = '#666';
+                    canvasCtx.font = '10px Arial';
+                    canvasCtx.fillText(`${freq}Hz`, x, canvas.height - 5);
+                }
 
                 x += barWidth + 1;
             }
